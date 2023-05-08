@@ -36,7 +36,7 @@ echo "# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports mai
 echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
 echo "# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse multiverse" >> /etc/apt/sources.list
 ```
-
+apt list --upgradable
 
 ## 软件源：
 ##### 添加PPA源到Source list中：
@@ -88,3 +88,22 @@ sudo apt remove program_name
 ```sh
 dpkg -r program_name
 ```
+## 查看deb软件包
+##### 查看版本：
+```sh
+sudo apt list --all-versions program_name
+```
+##### 安装版本：
+```sh
+sudo apt-get install program_name=1.1.1*
+```
+
+
+
+
+
+
+
+
+
+
