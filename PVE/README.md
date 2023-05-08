@@ -36,7 +36,6 @@ echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main c
 echo "# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
 echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free" >> /etc/apt/sources.list
 echo "# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free" >> /etc/apt/sources.list
-echo "OK"
 ```
 ##### pve软件源(/etc/apt/sources.list.d/pve-enterprise.list)：
 ```sh
