@@ -72,7 +72,22 @@ wget -O /var/lib/pve-manager/apl-info/mirrors.ustc.edu.cn https://mirrors.ustc.e
 ```sh
 systemctl restart pvedaemon.service
 ```
-
+## Proxmox VE技巧 移除PVE “没有有效订阅” 的弹窗提示
+```
+修改文件/usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+然后找到
+== 'Active'
+或者
+'No valid subscription'
+修改为
+if (false)
+或者
+ Ext.Msg.show({
+修改为
+ Ext.Msg.noshow({
+然后保存，重启网页服务
+systemctl restart pveproxy
+```
 
 ## 直通修改：
 ##### pcie直通：
