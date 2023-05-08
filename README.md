@@ -1,11 +1,10 @@
 # liunx
 ## linux禁用swap
-不重启电脑，禁用启用swap，立刻生效
+### 不重启电脑，禁用启用swap，立刻生效
 ###### 禁用命令:
 '''sh
 sudo swapoff -a
 '''
-
 ###### 启用命令:
 '''sh
 sudo swapon -a
