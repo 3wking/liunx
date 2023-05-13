@@ -1,17 +1,86 @@
 package main
 
+/*/小Q助手/*/
+
 import (
-	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os/exec"
 	"runtime"
 	"strings"
 
+	"github.com/denverdino/aliyungo/dns"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"golang.org/x/text/encoding/simplifiedchinese"
 )
+
+func DDNS() string {
+	// 读取配置文件信息
+	AccessKeyID := "LTAITH5SfzDHXM9T"
+	AccessKeySecret := "ZdLWBCDBExC5gKnS4L4cCZpiT9Z7dm"
+	DomainName := "3wking.com"
+	RR := "@"
+	// 获取公网IP信息
+	publicIP := IP()
+	fmt.Println("当前公网IP：" + publicIP)
+	// 连接阿里云服务器，获取DNS信息
+	client := dns.NewClient(AccessKeyID, AccessKeySecret)
+	client.SetDebug(false)
+	domainInfo := new(dns.DescribeDomainRecordsArgs)
+	domainInfo.DomainName = DomainName
+	oldRecord, err := client.DescribeDomainRecords(domainInfo)
+	if err != nil {
+		return "链接错误"
+	}
+
+	var exsitRecordID string
+	for _, record := range oldRecord.DomainRecords.Record {
+		if record.DomainName == DomainName && record.RR == RR {
+			if record.Value == publicIP {
+				return "域名IP与公网IP相同,无须解析。"
+			}
+			exsitRecordID = record.RecordId
+		}
+	}
+
+	if 0 < len(exsitRecordID) {
+		// 有配置记录，则匹配配置文件，进行更新操作
+		updateRecord := new(dns.UpdateDomainRecordArgs)
+		updateRecord.RecordId = exsitRecordID
+		updateRecord.RR = RR
+		updateRecord.Value = publicIP
+		updateRecord.Type = dns.ARecord
+		rsp := new(dns.UpdateDomainRecordResponse)
+		rsp, err := client.UpdateDomainRecord(updateRecord)
+		if nil != err {
+			return "修改解析失败"
+			println("修改解析失败", err)
+		} else {
+			return "修改解析成功"
+			println("修改解析成功", rsp)
+		}
+	} else {
+		// 没有找到配置记录，那么就新增一个
+		newRecord := new(dns.AddDomainRecordArgs)
+		newRecord.DomainName = DomainName
+		newRecord.RR = RR
+		newRecord.Value = publicIP
+		newRecord.Type = dns.ARecord
+		rsp := new(dns.AddDomainRecordResponse)
+		rsp, err = client.AddDomainRecord(newRecord)
+		if nil != err {
+			return "添加DNS解析失败"
+			println("修改解析失败", err)
+
+		} else {
+			return "添加DNS解析成功"
+			println("修改解析成功", rsp)
+		}
+	}
+	return ""
+}
 
 func system() string {
 	sysType := runtime.GOOS
@@ -70,27 +139,22 @@ func Shell(cmd string, shell bool) string {
 		if runtime.GOOS == "windows" {
 			Shell = exec.Command(system(), "/C", cmd)
 		}
-		var out bytes.Buffer
-		var Err bytes.Buffer
-		Shell.Stdout = &out
-		Shell.Stderr = &Err
-		err := Shell.Run()
+		out, err := Shell.CombinedOutput()
+		if err != nil {
+			//panic("some error found")
+			println("some error found")
+		}
 		if runtime.GOOS == "windows" {
-			if err != nil {
-				Error, _ := simplifiedchinese.GBK.NewDecoder().Bytes([]byte(Err.Bytes()))
-				return string(Error)
-			}
-			output, _ := simplifiedchinese.GBK.NewDecoder().Bytes([]byte(out.Bytes()))
+			output, _ := simplifiedchinese.GBK.NewDecoder().Bytes([]byte(out))
 			return string(output)
 		}
-		if err != nil {
-			return Err.String()
-		}
-		return out.String()
+		return string(out)
+
 	} else {
 		out, err := exec.Command(cmd).Output()
 		if err != nil {
-			panic("some error found")
+			//panic("some error found")
+			println("some error found")
 		}
 		return string(out)
 	}
@@ -131,6 +195,11 @@ func handle(message string) string {
 		if MESSAGE[0:6] == "命令" || MESSAGE[0:6] == "运行" {
 			return Shell(message[6:], true)
 		}
+
+		if MESSAGE[0:6] == "解析" {
+			return DDNS()
+		}
+
 	}
 	return ""
 }
@@ -162,5 +231,5 @@ func main() {
 	app := gin.Default()
 	app.GET("/", GET)
 	app.POST("/api", POST)
-	app.Run(":80")
+	app.Run(":5701")
 }
