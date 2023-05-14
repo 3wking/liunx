@@ -7,7 +7,7 @@ function Install() {
 	dir="/usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js"
 	rows=$(($(grep -n "No valid subscription" $dir |awk -F ':' '{print $1}')-1))
 	text=`sed -n ${tmp}p $dir | grep "Ext.Msg.show({"`
-	if [ $text ]; then
+	if [[ $text ]]; then
 		sed -i ''$tmp's/show/noshow/g' $dir
 		echo -e "${GREEN_COLOR}内容更改成功...${RES}"
 	else
