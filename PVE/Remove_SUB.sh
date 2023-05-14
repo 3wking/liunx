@@ -2,7 +2,7 @@
 RED_COLOR='\e[1;31m' #红色
 GREEN_COLOR='\e[1;32m' #绿色
 RES='\e[0m' #尾
-
+#安装
 function Install() {
 	dir="/usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js"
 	rows=$(($(grep -n "No valid subscription" $dir |awk -F ':' '{print $1}')-1))
