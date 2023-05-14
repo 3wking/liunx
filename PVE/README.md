@@ -73,6 +73,9 @@ systemctl restart pvedaemon.service
 ```
 ## Proxmox VE技巧 移除PVE “没有有效订阅” 的弹窗提示
 ```
+curl -k https://raw.iqiq.io/3wking/liunx/main/PVE/Remove_SUB.sh | bash
+```
+```
 修改文件/usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
 然后找到
 == 'Active'
