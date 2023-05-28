@@ -98,8 +98,15 @@ sudo apt list --all-versions program_name
 sudo apt-get install program_name=1.1.1*
 ```
 
-
-
+## 安装软件
+##### sudo
+```sh
+apt-get install sudo
+```
+##### curl
+```sh
+apt-get install curl
+```
 
 
 
